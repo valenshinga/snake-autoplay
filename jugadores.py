@@ -1,19 +1,24 @@
 # En este archivo tenemos las clases que representan jugadores
-import pickle
+import pickle, random
 
 class Random():
     def __init__(self, juego):
-        self.juego = None
-        ### Completar si hace falta
+        self.juego = juego  # Referencia a una instancia de Snake
 
-    # Juega al juego(de manera aleatoria) hasta que este termine
     def jugar(self):
-        ### Completar
-        pass
+        juego_terminado = False  # Controla si el juego ha terminado
+        while not juego_terminado:
+            # Elige una acción aleatoria: 0 (recto), 1 (izquierda), 2 (derecha)
+            accion = random.choice([0, 1, 2])
 
-    def entrenar(self):
-        raise NotImplementedError
+            # Realiza el movimiento y obtiene el nuevo estado del juego
+            estado_nuevo, recompenza, juego_terminado = self.juego.step(accion)
 
+            # Renderizar el juego después de cada paso
+            self.juego.render()
+
+            # Controla la velocidad del juego (FPS)
+            self.juego.clock.tick(10)  # Ajusta a la velocidad deseada
 
 class IA():
     def __init__(self, juego):

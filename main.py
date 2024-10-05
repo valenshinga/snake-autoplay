@@ -10,24 +10,22 @@ def print_help():
 
 if __name__ == "__main__":
     try:
-        tipo_jugador = sys.argv[1].lower()
-        entrenar     = sys.argv[2].lower()
-        file_path    = sys.argv[3]
-    
+        tipo_jugador = sys.argv[1].lower()  # Argumento para el tipo de jugador
+        entrenar     = sys.argv[2].lower()  # Si el agente debe ser entrenado
+        file_path    = sys.argv[3]          # Ruta al archivo de entrenamiento
+ 
     except Exception:
         print("Error, parametros pasados de manera incorrecta")
         print_help()
-    
+        sys.exit()
+
     juego = Snake(16)
     if tipo_jugador in JUGADORES_PERMITIDOS:
         jugador = JUGADORES_PERMITIDOS[tipo_jugador](juego)
     else:
         raise Exception("Nombre de jugador no conocido")
-    
-
-
-    # Entrenar puede ser 'si' o 'no', en caso de que sea 'si' se entrena el agente (siempre y cuando sea IA),
-    # en caso de que sea 'no', se ve al agente jugar el juego seleccionado.
+ 
+    # Si es un jugador IA, decide si entrenar o cargar el modelo
     if tipo_jugador == "ia":
         jugador.set_path(file_path)
         if entrenar in {"si", "true"}:
@@ -35,9 +33,6 @@ if __name__ == "__main__":
             jugador.save()
         else:
             jugador.load()
-        
+     
+    # Ejecutar el juego con el jugador seleccionado (Random o IA)
     jugador.jugar()
-
-    
-
-    

@@ -37,13 +37,16 @@ class Snake():
 		elif accion == 2:
 			self.direccion = Vector2(self.direccion.y, -self.direccion.x)
 
+		self.definir_estados(accion)
+		print(self.estados)
+
 		nueva_cabeza = self.serpiente[0] + self.direccion
 
 		if not (0 <= nueva_cabeza.x < self.tamano and 0 <= nueva_cabeza.y < self.tamano):
-			return None, -1, True
+			return None, -1, False
 
 		if nueva_cabeza in self.serpiente:
-			return None, -1, True
+			return None, -1, False
 
 		self.serpiente = [nueva_cabeza] + self.serpiente[:-1]
 
@@ -84,3 +87,62 @@ class Snake():
 			print(f"Ocurrió un error al renderizar: {e}")
 			pygame.quit()
 			sys.exit()
+
+	def definir_estados(self, accion):
+		self.estados = []
+		self.estados.extend(self.verificar_movimientos())
+		self.estados.extend(self.detectar_direccion(accion))
+		self.estados.extend(self.detectar_comida())
+					  
+		
+	def morira_en_direccion(self,direccion):
+		nueva_cabeza = self.serpiente[0] + direccion
+
+		if not (0 <= nueva_cabeza.x < self.tamano and 0 <= nueva_cabeza.y < self.tamano):
+			return 1
+		if nueva_cabeza in self.serpiente:
+			return 1
+		return 0
+
+	def calcular_direcciones(self):
+		adelante = self.direccion
+		izquierda = Vector2(-self.direccion.y, self.direccion.x)
+		derecha = Vector2(self.direccion.y, -self.direccion.x)
+
+		return adelante, izquierda, derecha
+	
+	def verificar_movimientos(self):
+		adelante, izquierda, derecha = self.calcular_direcciones()
+		morira_adelante = self.morira_en_direccion(adelante)
+		morira_izquierda = self.morira_en_direccion(izquierda)
+		morira_derecha = self.morira_en_direccion(derecha)
+
+		return [morira_adelante, morira_izquierda, morira_derecha]
+
+	def detectar_direccion(self, accion):
+		if self.direccion == Vector2(1,0):
+			return [0,1,0,0]
+		elif self.direccion == Vector2(-1,0):
+			return [1,0,0,0]
+		elif self.direccion == Vector2(0,1):
+			return [0,0,0,1]
+		elif self.direccion == Vector2(0,-1):
+			return [0,0,1,0]
+
+	def detectar_comida(self):
+		direccion_fruta_x = self.fruta.x - self.serpiente[0].x
+		direccion_fruta_y = self.fruta.y - self.serpiente[0].y
+		direccion_fruta = []
+		if direccion_fruta_x < 0:
+			direccion_fruta.append(1)
+			direccion_fruta.append(0)
+		else:
+			direccion_fruta.append(0)
+			direccion_fruta.append(1)
+		if direccion_fruta_y < 0:
+			direccion_fruta.append(1)
+			direccion_fruta.append(0)
+		else:
+			direccion_fruta.append(0)
+			direccion_fruta.append(1)
+		return direccion_fruta

@@ -30,6 +30,7 @@ class Snake():
 				sys.exit()
 
 	def step(self, accion):
+		pygame.event.pump()
 		assert accion in {0, 1, 2}, "Accion invalida"
 
 		if accion == 1:

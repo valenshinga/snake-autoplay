@@ -57,6 +57,18 @@ class Snake():
 	def render(self):
 		try:
 			self.screen.fill((175, 215, 70))
+			pasto = (167,209,61)
+			for row in range(self.tamano * 30):
+				if row % 2 == 0:
+					for col in range(self.tamano * 30):
+						if col % 2 == 0:
+							grilla_pasto = pygame.Rect(col * self.tamano, row * self.tamano, self.tamano, self.tamano)
+							pygame.draw.rect(self.screen, pasto, grilla_pasto)
+				else:
+					for col in range(self.tamano * 30):
+						if col % 2 != 0:
+							grilla_pasto = pygame.Rect(col * self.tamano, row * self.tamano, self.tamano, self.tamano)
+							pygame.draw.rect(self.screen, pasto, grilla_pasto)
 
 			for segmento in self.serpiente:
 				x_pos = int(segmento.x * 30)

@@ -53,7 +53,6 @@ class IA():
 								self.juego.reset()
 
 					self.juego.clock.tick(10)
-			print(self.Q)
 			self.save()
 		else:
 			while not juego_terminado:
@@ -68,7 +67,6 @@ class IA():
 	def entrenar(self):
 		self.entrenando = True
 		self.load()
-		print(self.Q)
 
 	def save(self):
 		if self.path is not None:

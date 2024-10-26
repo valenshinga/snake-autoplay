@@ -8,6 +8,8 @@ class Snake():
 		self.screen = pygame.display.set_mode((self.tamano * 30, self.tamano * 30))
 		self.clock = pygame.time.Clock()
 		self.reset()
+		self.estados = []
+		self.definir_estados_sin_accion()
 
 	def reset(self):
 		self.serpiente = [Vector2(random.randint(0, self.tamano - 1), random.randint(0, self.tamano - 1))]
@@ -16,12 +18,6 @@ class Snake():
 
 	def generar_fruta(self):
 		return Vector2(random.randint(0, self.tamano - 1), random.randint(0, self.tamano - 1))
-
-	def run_game(self):
-		while True:
-			self.handle_events()
-			self.render()
-			self.clock.tick(10)
 
 	def handle_events(self):
 		for event in pygame.event.get():
@@ -39,40 +35,39 @@ class Snake():
 			self.direccion = Vector2(self.direccion.y, -self.direccion.x)
 
 		self.definir_estados(accion)
-		print(self.estados)
 
 		nueva_cabeza = self.serpiente[0] + self.direccion
 
 		if not (0 <= nueva_cabeza.x < self.tamano and 0 <= nueva_cabeza.y < self.tamano):
-			return None, -1, False
+			return self.estados, -1, True
 
 		if nueva_cabeza in self.serpiente:
-			return None, -1, False
+			return self.estados, -1, True
 
 		self.serpiente = [nueva_cabeza] + self.serpiente[:-1]
 
 		if nueva_cabeza == self.fruta:
 			self.serpiente.append(self.serpiente[-1])
 			self.fruta = self.generar_fruta()
-			return None, 1, False
+			return self.estados, 1, False
 
-		return None, 0, False
+		return self.estados, 0, False
 	
 	def render(self):
 		try:
-			self.screen.fill((175, 215, 70))
-			pasto = (167,209,61)
-			for row in range(self.tamano * 30):
-				if row % 2 == 0:
-					for col in range(self.tamano * 30):
-						if col % 2 == 0:
-							grilla_pasto = pygame.Rect(col * self.tamano, row * self.tamano, self.tamano, self.tamano)
-							pygame.draw.rect(self.screen, pasto, grilla_pasto)
-				else:
-					for col in range(self.tamano * 30):
-						if col % 2 != 0:
-							grilla_pasto = pygame.Rect(col * self.tamano, row * self.tamano, self.tamano, self.tamano)
-							pygame.draw.rect(self.screen, pasto, grilla_pasto)
+			color_fondo_oscuro = (167, 209, 61) 
+			color_fondo_claro = (175, 215, 70) 
+
+			for fila in range(self.tamano):
+				for col in range(self.tamano):
+					x_pos = col * 30
+					y_pos = fila * 30
+					rect = pygame.Rect(x_pos, y_pos, 30, 30)
+					# Alternar los colores
+					if (fila + col) % 2 == 0:
+						pygame.draw.rect(self.screen, color_fondo_claro, rect)
+					else:
+						pygame.draw.rect(self.screen, color_fondo_oscuro, rect)
 
 			for segmento in self.serpiente:
 				x_pos = int(segmento.x * 30)
@@ -94,8 +89,8 @@ class Snake():
 		self.estados.extend(self.verificar_movimientos())
 		self.estados.extend(self.detectar_direccion(accion))
 		self.estados.extend(self.detectar_comida())
+		self.estados = ''.join(str(self.estados)).replace('[', '').replace(']', '').replace(',', '').strip()
 					  
-		
 	def morira_en_direccion(self,direccion):
 		nueva_cabeza = self.serpiente[0] + direccion
 
@@ -147,3 +142,18 @@ class Snake():
 			direccion_fruta.append(0)
 			direccion_fruta.append(1)
 		return direccion_fruta
+
+	def definir_estados_sin_accion(self):
+		self.estados.extend(self.verificar_movimientos()) 
+		self.estados.extend(self.detectar_direccion_sin_accion()) 
+		self.estados = ''.join(str(self.estados)).replace('[', '').replace(']', '').replace(',', '').strip()
+
+	def detectar_direccion_sin_accion(self):
+		if self.direccion == Vector2(1, 0):
+			return [0, 1, 0, 0]
+		elif self.direccion == Vector2(-1, 0):
+			return [1, 0, 0, 0]
+		elif self.direccion == Vector2(0, 1):
+			return [0, 0, 0, 1]
+		elif self.direccion == Vector2(0, -1):
+			return [0, 0, 1, 0]
